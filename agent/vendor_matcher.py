@@ -14,15 +14,15 @@ from excel_parser import VendorRecord
 @dataclass
 class VendorMatchResult:
     matched: bool
-    confidence: float                     # 0.0 – 1.0
+    confidence: float  
     matched_vendor: Optional[VendorRecord]
-    match_method: str                     # "exact", "alias", "fuzzy", "none"
+    match_method: str                
     clarifying_questions: list[str]
 
 
-FUZZY_AUTO_APPROVE_THRESHOLD  = 0.90   # ≥ this → matched
-FUZZY_FLAG_THRESHOLD          = 0.70   # between 0.70–0.90 → flagged with question
-                                        # < 0.70 → not matched
+FUZZY_AUTO_APPROVE_THRESHOLD  = 0.90   # more than 0.90 is  matched
+FUZZY_FLAG_THRESHOLD          = 0.70   # 0.70-0.90 is flagged with question
+                                    # less than 0.70 is not matched
 
 
 def match_vendor(extracted_name: str, vendors: list[VendorRecord]) -> VendorMatchResult:
@@ -42,18 +42,18 @@ def match_vendor(extracted_name: str, vendors: list[VendorRecord]) -> VendorMatc
             clarifying_questions=["No approved vendor list was loaded — cannot verify vendor."],
         )
 
-    # 1. Exact match (case/punctuation insensitive)
+    # check vendor punctuation
     for vendor in vendors:
         if _normalize(vendor.canonical_name) == normalized:
             return VendorMatchResult(True, 1.0, vendor, "exact", [])
 
-    # 2. Alias match
+    # match
     for vendor in vendors:
         for alias in vendor.aliases:
             if _normalize(alias) == normalized:
                 return VendorMatchResult(True, 0.97, vendor, "alias", [])
 
-    # 3. Fuzzy match across canonical names + aliases
+    # Fuzzy match
     best_score = 0.0
     best_vendor = None
 
