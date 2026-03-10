@@ -53,7 +53,7 @@ def build_audit_trail(
         processed_at=now,
     )
 
-    # ── Stage 1: Excel loading ──────────────────────────────────────────────
+    # Excel loading
     if excel_warnings:
         for w in excel_warnings:
             trail.events.append(AuditEvent(
@@ -66,7 +66,7 @@ def build_audit_trail(
             detail="Reference Excel loaded successfully."
         ))
 
-    # ── Stage 2: Invoice extraction ─────────────────────────────────────────
+    # invoice extraction
     trail.events.append(AuditEvent(
         timestamp=now, stage="EXTRACTION", action="COMPLETE",
         detail=f"Extracted invoice from '{invoice_file}' with confidence {invoice.confidence:.0%}.",
@@ -88,7 +88,7 @@ def build_audit_trail(
         "warnings": invoice.extraction_warnings,
     }
 
-    # ── Stage 3: Vendor matching ─────────────────────────────────────────────
+    # match vendor
     trail.events.append(AuditEvent(
         timestamp=now, stage="VENDOR_MATCH", action="RESULT",
         detail=(
@@ -107,7 +107,7 @@ def build_audit_trail(
         "canonical_name": vendor_result.matched_vendor.canonical_name if vendor_result.matched_vendor else None,
     }
 
-    # ── Stage 4: Line item comparison ───────────────────────────────────────
+    # compare line item
     for lr in decision.line_results:
         item = lr.invoice_item
         matched_sku = lr.matched_rate.sku if lr.matched_rate else "UNMATCHED"
@@ -127,7 +127,7 @@ def build_audit_trail(
                 detail=a, uncertainty=True
             ))
 
-    # ── Stage 5: Decision ────────────────────────────────────────────────────
+    # decision final
     for reason in decision.flag_reasons:
         trail.events.append(AuditEvent(
             timestamp=now, stage="DECISION", action="FLAG_REASON",
