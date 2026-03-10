@@ -19,7 +19,7 @@ class LineItemResult:
     match_confidence: float
     contracted_price: Optional[float]
     invoice_price: float
-    variance_pct: Optional[float]          # positive = overcharged
+    variance_pct: Optional[float]     
     variance_amount: Optional[float]
     within_threshold: Optional[bool]
     flag_reason: Optional[str]
@@ -28,7 +28,7 @@ class LineItemResult:
 
 @dataclass
 class DecisionResult:
-    status: str                            # "APPROVED" | "FLAGGED"
+    status: str  
     vendor_match_confidence: float
     variance_detected: bool
     line_results: list[LineItemResult]
@@ -60,14 +60,14 @@ def run_decision(
     line_results: list[LineItemResult] = []
     variance_detected = False
 
-    # ── 1. Vendor check ─────────────────────────────────────────────────────
+    # check the vendor
     if not vendor_result.matched:
         flag_reasons.append(
             f"Vendor not matched in approved list "
             f"(confidence {vendor_result.confidence:.0%}, method={vendor_result.match_method})"
         )
 
-    # ── 2. Line-item matching ────────────────────────────────────────────────
+    # match line-item
     total_contracted = 0.0
     total_contracted_valid = True
 
@@ -88,12 +88,12 @@ def run_decision(
         else:
             total_contracted_valid = False
 
-    # ── 3. Total sanity check ────────────────────────────────────────────────
-    # Recompute expected total from line items
+    # final check
+    # compute total
     computed_subtotal = sum(i.line_total for i in invoice.line_items)
     if invoice.subtotal is not None:
         sub_diff = abs(computed_subtotal - invoice.subtotal)
-        if sub_diff > 0.02:  # > 2 cents discrepancy
+        if sub_diff > 0.02:  
             flag_reasons.append(
                 f"Invoice subtotal ({invoice.subtotal:.2f}) does not match sum of line items "
                 f"({computed_subtotal:.2f}). Difference: {sub_diff:.2f}."
@@ -103,7 +103,7 @@ def run_decision(
                 "Is there a discount, credit, or missing line item?"
             )
 
-    # ── 4. Extraction confidence ─────────────────────────────────────────────
+    # extraction of confidence
     if invoice.confidence < 0.80:
         flag_reasons.append(
             f"Invoice extraction confidence is low ({invoice.confidence:.0%}). "
@@ -113,7 +113,7 @@ def run_decision(
         for w in invoice.extraction_warnings:
             flag_reasons.append(f"Extraction warning: {w}")
 
-    # ── 5. Final verdict ─────────────────────────────────────────────────────
+    # final decision
     status = "APPROVED" if not flag_reasons else "FLAGGED"
 
     total_variance = None
@@ -142,7 +142,7 @@ def _match_line_item(
     assumptions = []
     flag_reason = None
 
-    # Try SKU lookup first (exact, then normalized)
+    # Try SKU lookup
     matched_rate = None
     match_conf = 0.0
 
@@ -173,7 +173,7 @@ def _match_line_item(
                 f"({best_score:.0%} confidence)."
             )
 
-    # Compute variance
+    # get the variance
     contracted_price = matched_rate.unit_price if matched_rate else None
     invoice_price    = item.unit_price
     variance_pct     = None
