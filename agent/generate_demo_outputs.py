@@ -29,9 +29,7 @@ policy = Policy(
 )
 
 
-# ═══════════════════════════════════════════════════════════════
-# INVOICE 1: CLEAN — fully matches, auto-approved
-# ═══════════════════════════════════════════════════════════════
+# invoice 1
 rate_a = ContractedRate("SKU-001", "Widget Type A", 12.50, "each")
 rate_b = ContractedRate("SKU-002", "Consulting Services (hr)", 150.00, "hour")
 
@@ -90,15 +88,13 @@ trail = build_audit_trail("invoice1_clean.pdf", invoice_clean, vendor_clean, dec
 print("✓ Invoice 1 (clean) generated")
 
 
-# ═══════════════════════════════════════════════════════════════
-# INVOICE 2: MESSY — fuzzy vendor match, one variance overage
-# ═══════════════════════════════════════════════════════════════
+# invoice 2
 rate_c = ContractedRate("SKU-003", "Industrial Pump Unit", 4200.00, "unit")
 rate_d = ContractedRate("SKU-004", "Maintenance Kit",       85.00, "kit")
 
 invoice_messy = InvoiceData(
-    vendor_name="Globex Supplis Inc",   # typo — should be "Globex Supplies Inc"
-    invoice_number=None,                # missing invoice number
+    vendor_name="Globex Supplis Inc",  # Supplis??
+    invoice_number=None,             # doesn't have invoice number as well
     invoice_date="2025-02-28",
     due_date=None,
     currency="USD",
@@ -177,11 +173,9 @@ trail = build_audit_trail("invoice2_messy.jpg", invoice_messy, vendor_messy, dec
 print("✓ Invoice 2 (messy) generated")
 
 
-# ═══════════════════════════════════════════════════════════════
-# INVOICE 3: EDGE CASE — unknown vendor, unmatched SKUs, subtotal mismatch
-# ═══════════════════════════════════════════════════════════════
+# invoice 3
 invoice_edge = InvoiceData(
-    vendor_name="TechParts Global LLC",   # not in approved list
+    vendor_name="TechParts Global LLC",   # not in the approved list lol
     invoice_number="TP-88210",
     invoice_date="2025-03-05",
     due_date="2025-04-05",
@@ -191,7 +185,7 @@ invoice_edge = InvoiceData(
         LineItem("Expedited Shipping Fee",         1, 450.00,  450.00, None,         None),
         LineItem("Unknown Service Bundle",         1, 1200.00,1200.00, "SVC-BUNDLE", None),
     ],
-    subtotal=4650.00,   # intentionally wrong: actual sum = 4850.00
+    subtotal=4650.00,   # actual sum = 4850.00
     tax_amount=388.00,
     tax_rate_pct=8.0,
     shipping=0.0,
