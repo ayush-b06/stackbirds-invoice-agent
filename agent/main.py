@@ -23,7 +23,6 @@ from datetime import datetime
 
 import anthropic
 
-# Local imports
 from excel_parser import parse_excel
 from invoice_extractor import extract_invoice
 from vendor_matcher import match_vendor
@@ -40,7 +39,7 @@ def main():
     parser.add_argument("--api-key", default=None, help="Anthropic API key (or set ANTHROPIC_API_KEY)")
     args = parser.parse_args()
 
-    # ── Setup ────────────────────────────────────────────────────────────────
+    # setting things up 
     api_key = args.api_key or os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         print("ERROR: Set ANTHROPIC_API_KEY env var or pass --api-key", file=sys.stderr)
@@ -60,7 +59,7 @@ def main():
     print(f"  Excel   : {args.excel}")
     print(f"{'='*60}\n")
 
-    # ── Step 1: Load Excel ────────────────────────────────────────────────────
+    # load the excel
     print("[1/5] Loading reference Excel...")
     excel_data = parse_excel(args.excel)
     if excel_data.parse_warnings:
@@ -69,7 +68,7 @@ def main():
     print(f"  ✓  {len(excel_data.vendors)} vendors | {len(excel_data.rates)} rates")
     print(f"  ✓  Variance threshold: {excel_data.policy.variance_threshold_pct:.0%}")
 
-    # ── Step 2: Extract invoice ───────────────────────────────────────────────
+    # get the invoice
     print("\n[2/5] Extracting invoice via Claude vision...")
     try:
         invoice = extract_invoice(args.invoice, client)
@@ -83,14 +82,14 @@ def main():
         for w in invoice.extraction_warnings:
             print(f"  ⚠  {w}")
 
-    # ── Step 3: Vendor match ──────────────────────────────────────────────────
+    # match the vendor
     print("\n[3/5] Matching vendor...")
     vendor_result = match_vendor(invoice.vendor_name, excel_data.vendors)
     status_icon = "✓" if vendor_result.matched else "⚠"
     print(f"  {status_icon}  Matched={vendor_result.matched} | Method={vendor_result.match_method} | "
           f"Confidence={vendor_result.confidence:.0%}")
 
-    # ── Step 4: Decision ──────────────────────────────────────────────────────
+    # lets make our decision
     print("\n[4/5] Running decision engine...")
     decision = run_decision(invoice, excel_data.rates, excel_data.policy, vendor_result)
     print(f"  {'✓' if decision.status == 'APPROVED' else '⚠'}  Status: {decision.status}")
@@ -98,10 +97,11 @@ def main():
         for r in decision.flag_reasons:
             print(f"  ↳  {r}")
 
-    # ── Step 5: Generate outputs ──────────────────────────────────────────────
+    # output
     print("\n[5/5] Generating outputs...")
 
-    # A. Structured JSON payload
+    #structured json payload:
+  
     payload = {
         "status": decision.status,
         "vendor_match_confidence": round(decision.vendor_match_confidence, 4),
@@ -120,14 +120,14 @@ def main():
         json.dump(payload, f, indent=2)
     print(f"  ✓  Decision payload → {payload_path}")
 
-    # B. HTML reconciliation report
+    # HTML reconciliation report
     html = generate_html_report(invoice, vendor_result, decision, excel_data.policy)
     report_path = f"{prefix}_report.html"
     with open(report_path, "w") as f:
         f.write(html)
     print(f"  ✓  HTML report       → {report_path}")
 
-    # C. Audit trail
+    # Audit trail
     trail = build_audit_trail(
         args.invoice, invoice, vendor_result, decision, excel_data.parse_warnings
     )
@@ -136,7 +136,7 @@ def main():
         f.write(trail.to_json())
     print(f"  ✓  Audit trail       → {audit_path}")
 
-    # ── Summary ───────────────────────────────────────────────────────────────
+    # summarize it
     print(f"\n{'='*60}")
     print(f"  FINAL STATUS: {decision.status}")
     if decision.clarifying_questions:
