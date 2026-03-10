@@ -30,7 +30,7 @@ class ContractedRate:
 
 @dataclass
 class Policy:
-    variance_threshold_pct: float        # e.g. 0.05 = 5%
+    variance_threshold_pct: float    
     tax_policy: str
     shipping_policy: str
     notes: str
@@ -39,7 +39,7 @@ class Policy:
 @dataclass
 class ExcelData:
     vendors: list[VendorRecord] = field(default_factory=list)
-    rates: dict[str, ContractedRate] = field(default_factory=dict)  # keyed by SKU
+    rates: dict[str, ContractedRate] = field(default_factory=dict)  
     policy: Optional[Policy] = None
     parse_warnings: list[str] = field(default_factory=list)
 
@@ -63,7 +63,7 @@ def parse_excel(path: str) -> ExcelData:
 
     sheet_names = [s.lower() for s in xl.sheet_names]
 
-    # ---------- VENDORS ----------
+    # vendors
     vendor_sheet = _find_sheet(xl, sheet_names, ["vendor", "vendors", "approved"], 0)
     if vendor_sheet is not None:
         df = vendor_sheet.fillna("")
@@ -77,7 +77,7 @@ def parse_excel(path: str) -> ExcelData:
     else:
         result.parse_warnings.append("No 'Vendors' sheet found in Excel file.")
 
-    # ---------- RATES ----------
+    # rates
     rate_sheet = _find_sheet(xl, sheet_names, ["rate", "rates", "contracted", "pricing"], 1)
     if rate_sheet is not None:
         df = rate_sheet.fillna("")
@@ -91,11 +91,11 @@ def parse_excel(path: str) -> ExcelData:
     else:
         result.parse_warnings.append("No 'Rates' sheet found in Excel file.")
 
-    # ---------- POLICY ----------
+    # policy
     policy_sheet = _find_sheet(xl, sheet_names, ["policy", "policies", "settings", "config"], 2)
     if policy_sheet is not None:
         df = policy_sheet.fillna("")
-        # Policy sheet can be key-value OR a single-row table
+        
         kv = _try_kv(df)
         variance_pct = _parse_pct(kv.get("variance_threshold") or kv.get("variance") or "5%")
         result.policy = Policy(
@@ -111,7 +111,6 @@ def parse_excel(path: str) -> ExcelData:
     return result
 
 
-# ── helpers ──────────────────────────────────────────────────────────────────
 
 def _find_sheet(xl: pd.ExcelFile, lower_names: list, keywords: list, fallback_idx: int):
     for kw in keywords:
