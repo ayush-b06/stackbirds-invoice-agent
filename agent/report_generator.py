@@ -55,13 +55,13 @@ def generate_html_report(
             <td class="status-cell">{'<span class="badge-ok">OK</span>' if is_ok else '<span class="badge-flag">FLAG</span>'}</td>
         </tr>"""
 
-    # Flag reasons
+    # flag the reasons
     flags_html = ""
     if decision.flag_reasons:
         flags_items = "".join(f'<li>{r}</li>' for r in decision.flag_reasons)
         flags_html = f'<ul class="flag-list">{flags_items}</ul>'
 
-    # Clarifying questions
+    # clarify questions
     questions_html = ""
     if decision.clarifying_questions:
         q_items = "".join(f'<li>{q}</li>' for q in decision.clarifying_questions)
