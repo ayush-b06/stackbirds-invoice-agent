@@ -7,7 +7,7 @@ An LLM-powered invoice reconciliation agent that extracts, verifies, and approve
 ## Setup
 
 ```bash
-git clone <your-repo>
+git clone https://github.com/ayush-b06/stackbirds-invoice-agent/
 cd stackbirds-invoice-agent
 
 python -m venv venv
