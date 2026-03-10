@@ -1,0 +1,148 @@
+{
+  "run_id": "D6A0B8C1",
+  "invoice_file": "invoice3_edgecase.pdf",
+  "processed_at": "2026-03-10T01:39:43.337163+00:00",
+  "events": [
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "EXCEL_LOAD",
+      "action": "SUCCESS",
+      "detail": "Reference Excel loaded successfully.",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "EXTRACTION",
+      "action": "COMPLETE",
+      "detail": "Extracted invoice from 'invoice3_edgecase.pdf' with confidence 91%.",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "EXTRACTION",
+      "action": "WARNING",
+      "detail": "Tax is $0.00 \u2014 no tax exemption on file for this vendor",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "EXTRACTION",
+      "action": "WARNING",
+      "detail": "Vendor name on invoice 'Zenith Catering Group' vs approved 'Zenith Catering Group Inc'",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "VENDOR_MATCH",
+      "action": "RESULT",
+      "detail": "Vendor 'Zenith Catering Group' matched=True, method=exact, confidence=100%. Matched to: Zenith Catering Group Inc",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Corporate Lunch Buffet' \u2192 no contracted rate found",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Beverage Package' \u2192 no contracted rate found",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Vegetarian Add-on' \u2192 no contracted rate found",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Corporate Lunch Buffet' \u2014 no contracted rate found in reference data",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Beverage Package' \u2014 no contracted rate found in reference data",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Vegetarian Add-on' \u2014 no contracted rate found in reference data",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "Extraction warning: Tax is $0.00 \u2014 no tax exemption on file for this vendor",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "Extraction warning: Vendor name on invoice 'Zenith Catering Group' vs approved 'Zenith Catering Group Inc'",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.337163+00:00",
+      "stage": "DECISION",
+      "action": "FINAL",
+      "detail": "Status: FLAGGED. Flag count: 5.",
+      "uncertainty": false
+    }
+  ],
+  "extraction_summary": {
+    "vendor_name": "Zenith Catering Group",
+    "invoice_number": "ZCG-5541",
+    "invoice_date": "2025-10-28",
+    "line_item_count": 3,
+    "total": 1149.0,
+    "currency": "USD",
+    "confidence": 0.91,
+    "warnings": [
+      "Tax is $0.00 \u2014 no tax exemption on file for this vendor",
+      "Vendor name on invoice 'Zenith Catering Group' vs approved 'Zenith Catering Group Inc'"
+    ]
+  },
+  "vendor_match_summary": {
+    "extracted_name": "Zenith Catering Group",
+    "matched": true,
+    "match_method": "exact",
+    "confidence": 1.0,
+    "canonical_name": "Zenith Catering Group Inc"
+  },
+  "decision_summary": {
+    "status": "FLAGGED",
+    "vendor_match_confidence": 1.0,
+    "variance_detected": false,
+    "flag_count": 5,
+    "flag_reasons": [
+      "'Corporate Lunch Buffet' \u2014 no contracted rate found in reference data",
+      "'Beverage Package' \u2014 no contracted rate found in reference data",
+      "'Vegetarian Add-on' \u2014 no contracted rate found in reference data",
+      "Extraction warning: Tax is $0.00 \u2014 no tax exemption on file for this vendor",
+      "Extraction warning: Vendor name on invoice 'Zenith Catering Group' vs approved 'Zenith Catering Group Inc'"
+    ],
+    "clarifying_questions": [
+      "'Corporate Lunch Buffet' was not found in contracted rates. Is this a new or unapproved item?",
+      "'Beverage Package' was not found in contracted rates. Is this a new or unapproved item?",
+      "'Vegetarian Add-on' was not found in contracted rates. Is this a new or unapproved item?"
+    ],
+    "assumptions_made": [],
+    "total_invoice": 1149.0,
+    "total_contracted": null,
+    "total_variance_amount": null
+  },
+  "final_status": "FLAGGED"
+}

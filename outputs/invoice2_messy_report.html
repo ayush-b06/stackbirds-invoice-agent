@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Reconciliation — Bright Office LLC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4f8dff;
+    --green: #00e5a0;
+    --red: #ff5c5c;
+    --yellow: #ffc84a;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── Scanline overlay ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeSlide 0.5s ease both;
+  }
+
+  .header-left .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .header-left h1 {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .header-left .meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: var(--mono);
+  }
+
+  .status-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .status-pill {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1.5px solid #ff5c5c;
+    color: #ff5c5c;
+    background: rgba(255,92,92,0.08);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 #ff5c5c40; }
+    50% { box-shadow: 0 0 0 8px #ff5c5c00; }
+  }
+
+  .conf-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── Stats bar ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+    animation: fadeSlide 0.5s ease 0.1s both;
+  }
+
+  .stat-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    transition: border-color 0.2s;
+  }
+  .stat-block:hover { border-color: rgba(79,141,255,0.3); }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .stat-pos { color: var(--green); }
+  .stat-neg { color: var(--red); }
+  .stat-warn { color: var(--yellow); }
+
+  /* ─── Panel ─── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    animation: fadeSlide 0.5s ease 0.2s both;
+  }
+
+  .panel-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .panel-header:hover { background: rgba(255,255,255,0.03); }
+  .panel-header .toggle { margin-left: auto; font-size: 12px; transition: transform 0.3s; }
+  .panel.collapsed .panel-header .toggle { transform: rotate(-90deg); }
+  .panel.collapsed .panel-body { display: none; }
+
+  .panel-body { padding: 18px; }
+
+  /* ─── Table ─── */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+  }
+
+  th {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th.num { text-align: right; }
+
+  td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  td.num { text-align: right; }
+
+  tr:last-child td { border-bottom: none; }
+
+  .row-ok { background: transparent; }
+  .row-flag { background: rgba(255,92,92,0.04); }
+  .row-flag:hover { background: rgba(255,92,92,0.07); }
+  .row-ok:hover { background: rgba(255,255,255,0.02); }
+
+  .item-desc { color: var(--text); margin-bottom: 2px; }
+  .item-sku { font-size: 10px; color: var(--muted); }
+
+  .var-ok { color: var(--green); }
+  .var-over { color: var(--red); }
+  .var-under { color: var(--yellow); }
+  .na { color: var(--muted); font-style: italic; }
+
+  .badge-ok {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    background: rgba(0,229,160,0.1);
+    color: var(--green);
+    border: 1px solid rgba(0,229,160,0.3);
+  }
+  .badge-flag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    background: rgba(255,92,92,0.1);
+    color: var(--red);
+    border: 1px solid rgba(255,92,92,0.3);
+  }
+
+  .assumption-tag {
+    font-size: 10px;
+    color: var(--yellow);
+    margin-top: 4px;
+    opacity: 0.8;
+  }
+
+  /* ─── Flag panel ─── */
+  .flag-panel { border-color: rgba(255,92,92,0.25); }
+  .flag-panel .panel-header { color: var(--red); }
+
+  .flag-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .flag-list li {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    background: rgba(255,92,92,0.06);
+    border-left: 2px solid var(--red);
+    color: #ffaaaa;
+  }
+
+  /* ─── Questions panel ─── */
+  .questions-panel { border-color: rgba(255,200,74,0.25); }
+  .questions-panel .panel-header { color: var(--yellow); }
+
+  .q-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .q-list li {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    background: rgba(255,200,74,0.06);
+    border-left: 2px solid var(--yellow);
+    color: #ffe8a0;
+  }
+
+  /* ─── Warn box ─── */
+  .warn-box {
+    padding: 12px 16px;
+    background: rgba(255,200,74,0.05);
+    border: 1px solid rgba(255,200,74,0.2);
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #ffe8a0;
+  }
+  .warn-box ul { margin-top: 6px; padding-left: 18px; }
+
+  /* ─── Invoice meta grid ─── */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-item .k {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-item .v {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel { animation: fadeSlide 0.4s ease both; }
+  .panel:nth-child(1) { animation-delay: 0.05s; }
+  .panel:nth-child(2) { animation-delay: 0.10s; }
+  .panel:nth-child(3) { animation-delay: 0.15s; }
+  .panel:nth-child(4) { animation-delay: 0.20s; }
+
+  /* confidence meter */
+  .conf-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .conf-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .conf-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    transition: width 1s ease;
+  }
+  .conf-pct { font-family: var(--mono); font-size: 11px; color: var(--muted); min-width: 36px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="label">Invoice Reconciliation Report</div>
+      <h1>Bright Office LLC</h1>
+      <div class="meta">
+        #BO-8872 &nbsp;·&nbsp;
+        2025-11-15 &nbsp;·&nbsp;
+        USD 430.31
+      </div>
+    </div>
+    <div class="status-badge">
+      <div class="status-pill">⚑ FLAGGED</div>
+      <div class="conf-tag">vendor conf 100%</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-block">
+      <div class="stat-label">Invoice Total</div>
+      <div class="stat-value">$430.31</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Contracted Total</div>
+      <div class="stat-value">$382.73</div>
+    </div>
+    <div class="stat-block"><div class="stat-label">Total Variance</div><div class="stat-value stat-neg">+$47.58</div></div>
+    <div class="stat-block">
+      <div class="stat-label">Line Items</div>
+      <div class="stat-value">3</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Flags</div>
+      <div class="stat-value stat-neg">5</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Extraction Conf</div>
+      <div class="stat-value stat-warn">79%</div>
+    </div>
+  </div>
+
+  <div class="warn-box"><strong>Extraction Warnings:</strong><ul><li>Invoice note states totals may include adjustments — exact line item breakdown uncertain</li></ul></div>
+
+  <!-- Flags -->
+  <div class="panel flag-panel"><div class="panel-header" onclick="togglePanel(this)">⚑ Flag Reasons <span class="toggle">▾</span></div><div class="panel-body"><ul class="flag-list"><li>'Standing Desk Rental': invoice $150.00 vs contracted $60.04 — overcharged by 149.8% ($89.96)</li><li>'Ergonomic Chair Rental': invoice $90.00 vs contracted $39.43 — overcharged by 128.3% ($101.14)</li><li>'Cable Management Kit': invoice $22.50 vs contracted $81.28 — undercharged by 72.3% ($176.33)</li><li>Low extraction confidence (79%)</li><li>Extraction warning: Invoice note states totals may include adjustments — exact line item breakdown uncertain</li></ul></div></div>
+
+  
+
+  <!-- Invoice Details -->
+  <div class="panel">
+    <div class="panel-header" onclick="togglePanel(this)">Invoice Metadata <span class="toggle">▾</span></div>
+    <div class="panel-body">
+      <div class="meta-grid">
+        <div class="meta-item"><div class="k">Vendor</div><div class="v">Bright Office LLC</div></div>
+        <div class="meta-item"><div class="k">Vendor Match</div>
+          <div class="v">
+            BrightOffice LLC (exact)
+            <div class="conf-bar-wrap">
+              <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%"></div></div>
+              <span class="conf-pct">100%</span>
+            </div>
+          </div>
+        </div>
+        <div class="meta-item"><div class="k">Invoice #</div><div class="v">BO-8872</div></div>
+        <div class="meta-item"><div class="k">Invoice Date</div><div class="v">2025-11-15</div></div>
+        <div class="meta-item"><div class="k">Due Date</div><div class="v">—</div></div>
+        <div class="meta-item"><div class="k">Currency</div><div class="v">USD</div></div>
+        <div class="meta-item"><div class="k">Tax</div><div class="v">$32.81 </div></div>
+        <div class="meta-item"><div class="k">Shipping</div><div class="v">—</div></div>
+        <div class="meta-item"><div class="k">Variance Threshold</div><div class="v">5%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line Items -->
+  <div class="panel">
+    <div class="panel-header" onclick="togglePanel(this)">Line Item Comparison <span class="toggle">▾</span></div>
+    <div class="panel-body" style="padding: 0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Description / SKU</th>
+              <th class="num">Qty</th>
+              <th class="num">Invoice Price</th>
+              <th class="num">Contracted</th>
+              <th class="num">Line Total</th>
+              <th class="num">Variance</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+        <tr class="row-flag">
+            <td>
+                <div class="item-desc">Standing Desk Rental</div>
+                <div class="item-sku">— → Standing Desk Rental</div>
+                
+            </td>
+            <td class="num">1</td>
+            <td class="num">$150.00</td>
+            <td class="num">$60.04</td>
+            <td class="num">$150.00</td>
+            <td class="num var-over">+149.8%</td>
+            <td class="status-cell"><span class="badge-flag">FLAG</span></td>
+        </tr>
+        <tr class="row-flag">
+            <td>
+                <div class="item-desc">Ergonomic Chair Rental</div>
+                <div class="item-sku">— → Ergonomic Chair Rental</div>
+                
+            </td>
+            <td class="num">2</td>
+            <td class="num">$90.00</td>
+            <td class="num">$39.43</td>
+            <td class="num">$180.00</td>
+            <td class="num var-over">+128.3%</td>
+            <td class="status-cell"><span class="badge-flag">FLAG</span></td>
+        </tr>
+        <tr class="row-flag">
+            <td>
+                <div class="item-desc">Cable Management Kit</div>
+                <div class="item-sku">— → Cable Management Kit</div>
+                
+            </td>
+            <td class="num">3</td>
+            <td class="num">$22.50</td>
+            <td class="num">$81.28</td>
+            <td class="num">$67.50</td>
+            <td class="num var-under">-72.3%</td>
+            <td class="status-cell"><span class="badge-flag">FLAG</span></td>
+        </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="panel"><div class="panel-header" onclick="togglePanel(this)">Invoice Notes <span class="toggle">▾</span></div><div class="panel-body"><p style="font-size:13px;color:#aaa;">Some line items may include bundled services. Totals may include adjustments.</p></div></div>
+
+  <div class="footer">
+    <span>Stackbirds Invoice Agent</span>
+    <span>Safety over automation — flag early, review carefully</span>
+  </div>
+
+</div>
+
+<script>
+  function togglePanel(header) {
+    header.closest('.panel').classList.toggle('collapsed');
+  }
+
+  // Animate conf bars on load
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.conf-bar-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => bar.style.width = w, 100);
+    });
+  });
+</script>
+</body>
+</html>

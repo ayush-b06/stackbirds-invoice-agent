@@ -1,0 +1,111 @@
+{
+  "run_id": "EA574D97",
+  "invoice_file": "invoice1_clean.pdf",
+  "processed_at": "2026-03-10T01:39:43.327055+00:00",
+  "events": [
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "EXCEL_LOAD",
+      "action": "SUCCESS",
+      "detail": "Reference Excel loaded successfully.",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "EXTRACTION",
+      "action": "COMPLETE",
+      "detail": "Extracted invoice from 'invoice1_clean.pdf' with confidence 98%.",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "VENDOR_MATCH",
+      "action": "RESULT",
+      "detail": "Vendor 'Acme Supplies Inc.' matched=True, method=exact, confidence=100%. Matched to: Acme Supplies Inc.",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'A4 Paper Box' (SKU: N/A) \u2192 contracted SKU: A4 Paper Box | invoice: 25.00 contracted: 84.99 | variance: -70.6%",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Printer Toner Model X' (SKU: N/A) \u2192 contracted SKU: Printer Toner Model X | invoice: 120.00 contracted: 15.91 | variance: 654.2%",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Staples Pack' (SKU: N/A) \u2192 contracted SKU: Staples Pack | invoice: 8.00 contracted: 75.39 | variance: -89.4%",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'A4 Paper Box': invoice $25.00 vs contracted $84.99 \u2014 undercharged by 70.6% ($1199.80)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Printer Toner Model X': invoice $120.00 vs contracted $15.91 \u2014 overcharged by 654.2% ($520.45)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Staples Pack': invoice $8.00 vs contracted $75.39 \u2014 undercharged by 89.4% ($673.90)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.327055+00:00",
+      "stage": "DECISION",
+      "action": "FINAL",
+      "detail": "Status: FLAGGED. Flag count: 3.",
+      "uncertainty": false
+    }
+  ],
+  "extraction_summary": {
+    "vendor_name": "Acme Supplies Inc.",
+    "invoice_number": "INV-1001",
+    "invoice_date": "2025-11-02",
+    "line_item_count": 3,
+    "total": 1302.35,
+    "currency": "USD",
+    "confidence": 0.98,
+    "warnings": []
+  },
+  "vendor_match_summary": {
+    "extracted_name": "Acme Supplies Inc.",
+    "matched": true,
+    "match_method": "exact",
+    "confidence": 1.0,
+    "canonical_name": "Acme Supplies Inc."
+  },
+  "decision_summary": {
+    "status": "FLAGGED",
+    "vendor_match_confidence": 1.0,
+    "variance_detected": true,
+    "flag_count": 3,
+    "flag_reasons": [
+      "'A4 Paper Box': invoice $25.00 vs contracted $84.99 \u2014 undercharged by 70.6% ($1199.80)",
+      "'Printer Toner Model X': invoice $120.00 vs contracted $15.91 \u2014 overcharged by 654.2% ($520.45)",
+      "'Staples Pack': invoice $8.00 vs contracted $75.39 \u2014 undercharged by 89.4% ($673.90)"
+    ],
+    "clarifying_questions": [],
+    "assumptions_made": [],
+    "total_invoice": 1302.35,
+    "total_contracted": 2533.25,
+    "total_variance_amount": -1230.9
+  },
+  "final_status": "FLAGGED"
+}

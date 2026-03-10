@@ -1,0 +1,136 @@
+{
+  "run_id": "85CEA6CF",
+  "invoice_file": "invoice2_messy.pdf",
+  "processed_at": "2026-03-10T01:39:43.333089+00:00",
+  "events": [
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "EXCEL_LOAD",
+      "action": "SUCCESS",
+      "detail": "Reference Excel loaded successfully.",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "EXTRACTION",
+      "action": "COMPLETE",
+      "detail": "Extracted invoice from 'invoice2_messy.pdf' with confidence 79%.",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "EXTRACTION",
+      "action": "WARNING",
+      "detail": "Invoice note states totals may include adjustments \u2014 exact line item breakdown uncertain",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "VENDOR_MATCH",
+      "action": "RESULT",
+      "detail": "Vendor 'Bright Office LLC' matched=True, method=exact, confidence=100%. Matched to: BrightOffice LLC",
+      "uncertainty": false
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Standing Desk Rental' (SKU: N/A) \u2192 contracted SKU: Standing Desk Rental | invoice: 150.00 contracted: 60.04 | variance: 149.8%",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Ergonomic Chair Rental' (SKU: N/A) \u2192 contracted SKU: Ergonomic Chair Rental | invoice: 90.00 contracted: 39.43 | variance: 128.3%",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "LINE_COMPARISON",
+      "action": "ITEM",
+      "detail": "'Cable Management Kit' (SKU: N/A) \u2192 contracted SKU: Cable Management Kit | invoice: 22.50 contracted: 81.275 | variance: -72.3%",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Standing Desk Rental': invoice $150.00 vs contracted $60.04 \u2014 overcharged by 149.8% ($89.96)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Ergonomic Chair Rental': invoice $90.00 vs contracted $39.43 \u2014 overcharged by 128.3% ($101.14)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "'Cable Management Kit': invoice $22.50 vs contracted $81.28 \u2014 undercharged by 72.3% ($176.33)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "Low extraction confidence (79%)",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "DECISION",
+      "action": "FLAG_REASON",
+      "detail": "Extraction warning: Invoice note states totals may include adjustments \u2014 exact line item breakdown uncertain",
+      "uncertainty": true
+    },
+    {
+      "timestamp": "2026-03-10T01:39:43.333089+00:00",
+      "stage": "DECISION",
+      "action": "FINAL",
+      "detail": "Status: FLAGGED. Flag count: 5.",
+      "uncertainty": false
+    }
+  ],
+  "extraction_summary": {
+    "vendor_name": "Bright Office LLC",
+    "invoice_number": "BO-8872",
+    "invoice_date": "2025-11-15",
+    "line_item_count": 3,
+    "total": 430.31,
+    "currency": "USD",
+    "confidence": 0.79,
+    "warnings": [
+      "Invoice note states totals may include adjustments \u2014 exact line item breakdown uncertain"
+    ]
+  },
+  "vendor_match_summary": {
+    "extracted_name": "Bright Office LLC",
+    "matched": true,
+    "match_method": "exact",
+    "confidence": 1.0,
+    "canonical_name": "BrightOffice LLC"
+  },
+  "decision_summary": {
+    "status": "FLAGGED",
+    "vendor_match_confidence": 1.0,
+    "variance_detected": true,
+    "flag_count": 5,
+    "flag_reasons": [
+      "'Standing Desk Rental': invoice $150.00 vs contracted $60.04 \u2014 overcharged by 149.8% ($89.96)",
+      "'Ergonomic Chair Rental': invoice $90.00 vs contracted $39.43 \u2014 overcharged by 128.3% ($101.14)",
+      "'Cable Management Kit': invoice $22.50 vs contracted $81.28 \u2014 undercharged by 72.3% ($176.33)",
+      "Low extraction confidence (79%)",
+      "Extraction warning: Invoice note states totals may include adjustments \u2014 exact line item breakdown uncertain"
+    ],
+    "clarifying_questions": [],
+    "assumptions_made": [],
+    "total_invoice": 430.31,
+    "total_contracted": 382.725,
+    "total_variance_amount": 47.58499999999998
+  },
+  "final_status": "FLAGGED"
+}

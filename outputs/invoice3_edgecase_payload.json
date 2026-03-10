@@ -1,0 +1,22 @@
+{
+  "status": "FLAGGED",
+  "vendor_match_confidence": 1.0,
+  "variance_detected": false,
+  "invoice_number": "ZCG-5541",
+  "vendor_name": "Zenith Catering Group",
+  "total_invoice": 1149.0,
+  "total_contracted": null,
+  "total_variance_amount": null,
+  "flag_reasons": [
+    "'Corporate Lunch Buffet' \u2014 no contracted rate found in reference data",
+    "'Beverage Package' \u2014 no contracted rate found in reference data",
+    "'Vegetarian Add-on' \u2014 no contracted rate found in reference data",
+    "Extraction warning: Tax is $0.00 \u2014 no tax exemption on file for this vendor",
+    "Extraction warning: Vendor name on invoice 'Zenith Catering Group' vs approved 'Zenith Catering Group Inc'"
+  ],
+  "clarifying_questions": [
+    "'Corporate Lunch Buffet' was not found in contracted rates. Is this a new or unapproved item?",
+    "'Beverage Package' was not found in contracted rates. Is this a new or unapproved item?",
+    "'Vegetarian Add-on' was not found in contracted rates. Is this a new or unapproved item?"
+  ]
+}

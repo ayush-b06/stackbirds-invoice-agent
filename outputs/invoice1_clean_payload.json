@@ -1,0 +1,16 @@
+{
+  "status": "FLAGGED",
+  "vendor_match_confidence": 1.0,
+  "variance_detected": true,
+  "invoice_number": "INV-1001",
+  "vendor_name": "Acme Supplies Inc.",
+  "total_invoice": 1302.35,
+  "total_contracted": 2533.25,
+  "total_variance_amount": -1230.9,
+  "flag_reasons": [
+    "'A4 Paper Box': invoice $25.00 vs contracted $84.99 \u2014 undercharged by 70.6% ($1199.80)",
+    "'Printer Toner Model X': invoice $120.00 vs contracted $15.91 \u2014 overcharged by 654.2% ($520.45)",
+    "'Staples Pack': invoice $8.00 vs contracted $75.39 \u2014 undercharged by 89.4% ($673.90)"
+  ],
+  "clarifying_questions": []
+}

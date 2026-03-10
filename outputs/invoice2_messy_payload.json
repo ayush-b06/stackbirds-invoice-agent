@@ -1,0 +1,18 @@
+{
+  "status": "FLAGGED",
+  "vendor_match_confidence": 1.0,
+  "variance_detected": true,
+  "invoice_number": "BO-8872",
+  "vendor_name": "Bright Office LLC",
+  "total_invoice": 430.31,
+  "total_contracted": 382.725,
+  "total_variance_amount": 47.58499999999998,
+  "flag_reasons": [
+    "'Standing Desk Rental': invoice $150.00 vs contracted $60.04 \u2014 overcharged by 149.8% ($89.96)",
+    "'Ergonomic Chair Rental': invoice $90.00 vs contracted $39.43 \u2014 overcharged by 128.3% ($101.14)",
+    "'Cable Management Kit': invoice $22.50 vs contracted $81.28 \u2014 undercharged by 72.3% ($176.33)",
+    "Low extraction confidence (79%)",
+    "Extraction warning: Invoice note states totals may include adjustments \u2014 exact line item breakdown uncertain"
+  ],
+  "clarifying_questions": []
+}
