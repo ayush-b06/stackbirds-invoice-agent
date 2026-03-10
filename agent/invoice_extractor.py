@@ -13,7 +13,7 @@ from typing import Optional
 try:
     import anthropic
 except ImportError:
-    anthropic = None  # type: ignore
+    anthropic = None 
 
 SUPPORTED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".webp", ".gif"}
 
@@ -97,15 +97,12 @@ def extract_invoice(file_path: str, client) -> InvoiceData:
     if ext not in SUPPORTED_EXTENSIONS:
         raise ValueError(f"Unsupported file type: {ext}. Supported: {SUPPORTED_EXTENSIONS}")
 
-    # Read and encode file
     with open(path, "rb") as f:
         file_bytes = f.read()
     b64_data = base64.standard_b64encode(file_bytes).decode("utf-8")
 
-    # Determine media type
     media_type = _get_media_type(ext)
 
-    # Build message content
     if ext == ".pdf":
         content = [
             {
@@ -139,7 +136,6 @@ def extract_invoice(file_path: str, client) -> InvoiceData:
 
     raw_text = response.content[0].text.strip()
 
-    # Strip markdown fences if present
     raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
     raw_text = re.sub(r"\s*```$", "", raw_text)
 
